@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Just One Game 💖💖💖</title>
+
+  <!-- SweetAlert2 Library -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      color: white;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.3);
+      padding: 30px;
+      border-radius: 16px;
+      width: 380px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease;
+	  align:center;
+    }
+
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Button Styles */
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      background: linear-gradient(135deg, #ff4d6d, #ff758c);
+      color: white;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+	.final-proposal button {
+  width: auto !important;
+  min-width: 120px;
+  padding: 12px 22px;
+}
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    #score {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .final-proposal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .final-proposal p {
+      font-size: 30px;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card" id="game">
+  <div id="score">Score: 0/10</div>
+  <h2 id="question"></h2>
+  <div id="options"></div>
+  <div id="feedback"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "What’s our favorite memory together?",
+    options: ["Our first date 🍽️", "Our late-night talks 💬", "The day we met 💖", "That time we couldn’t stop laughing 🤭"],
+    answer: 2
+  },
+  {
+    q: "If we could go anywhere together, what would it be?",
+    options: ["A beach with sunsets 🌅", "A quiet park for a picnic 🌳", "A cozy spot to watch the stars ✨", "Anywhere, as long as it’s with you 🥰"],
+    answer: 3
+  },
+  {
+    q: "What makes us the perfect team?",
+    options: ["We support each other no matter what 💪", "We know how to have fun, no matter the situation 🎉", "We balance each other out perfectly ⚖️", "We just get each other, always 😌"],
+    answer: 3
+  },
+  {
+    q: "What’s our favorite thing to do together?",
+    options: ["Planning spontaneous date nights 🥂", "Cooking dinner together 🍳", "Getting lost in deep conversations until the morning 🌙", "Doing absolutely nothing and just enjoying each other’s company 💕"],
+    answer: 3
+  },
+  {
+    q: "What’s something that always brings us closer?",
+    options: ["Sharing our dreams and goals for the future 💭", "Helping each other through tough times 💪", "Enjoying quiet moments together, no words needed 🤫", "Supporting each other’s passions and growth 🌱"],
+    answer: 3
+  },
+  {
+    q: "How do we make even the ordinary moments feel special?",
+    options: ["By making each other smile every day 😊", "With spontaneous little surprises 🎁", "With our special routines 💖", "By just being ourselves with no pretenses 💫"],
+    answer: 3
+  },
+  {
+    q: "If our love story was a book, what would the title be?",
+    options: ["A Love Like No Other 📖", "Two Hearts, One Journey 🌹", "Our Forever Story 💍", "The Best Adventure We Could Have 🗺️"],
+    answer: 3
+  },
+  {
+    q: "When we’re together, what does time feel like?",
+    options: ["It flies by in the blink of an eye ⏰", "It stands still, like we’re in our own world ⏳", "It feels just right, like it’s meant to be 💖", "Every second feels precious ⏱️"],
+    answer: 3
+  },
+  {
+    q: "What’s our dream for the future together?",
+    options: ["Building a home full of love 🏡", "Making new memories with every passing year 🗓️", "Growing old together and being each other’s best friend 💕", "Taking on every challenge as a team 💪"],
+    answer: 3
+  },
+  {
+    q: "What’s the one thing we both agree on, no matter what?",
+    options: ["We’re always stronger together 💪", "We’ll always have each other ❤️", "We want to grow old together 💍", "Our love is enough to get through anything 🌟"],
+    answer: 3
+  }
+];
+
+let index = 0;
+let score = 0;
+
+const wrongReplies = [
+  "Hmm… Nice try, but not quite! 😅",
+  "Oops! Maybe next time 😘",
+  "Close, but no cigar! Try again. 🤔"
+];
+
+const rightReplies = [
+  "Woo, great answer! You're on fire! 🔥",
+  "Correct! You know us so well! 😘",
+  "That's the right answer! Keep going! 💪"
+];
+
+function loadQuestion() {
+  document.getElementById("feedback").innerText = "";
+  document.getElementById("question").innerText = questions[index].q;
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  questions[index].options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.innerText = opt;
+    btn.onclick = () => checkAnswer(i);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(selected) {
+  const feedback = document.getElementById("feedback");
+
+  if (selected === questions[index].answer) {
+    score++;
+    Swal.fire({
+  icon: 'success',
+  title: 'Correct!',
+  text: rightReplies[Math.floor(Math.random() * rightReplies.length)],
+  width: 280,
+  padding: '1em',
+  timer: 900,
+  showConfirmButton: false,
+  background: '#ff758c',
+  color: 'white'
+});
+  } else {
+   Swal.fire({
+  icon: 'error',
+  title: 'Oops!',
+  text: wrongReplies[Math.floor(Math.random() * wrongReplies.length)],
+  width: 280,
+  padding: '1em',
+  timer: 900,
+  showConfirmButton: false,
+  background: '#ff758c',
+  color: 'white'
+});
+  }
+
+  document.getElementById("score").innerText = `Score: ${score}/10`;
+
+  index++;
+  if (index < questions.length) {
+    setTimeout(loadQuestion, 1200);
+  } else {
+    setTimeout(showProposal, 1500);
+  }
+}
+
+function showProposal() {
+  document.getElementById("game").innerHTML = `
+    <div class="final-proposal">
+      <h2>Will you marry me? 💍</h2>
+
+      <div style="display:flex; gap:20px; justify-content:center; margin-top:20px;">
+        <button onclick="yes()">Yes 💘</button>
+        <button id="noBtn" onmouseover="moveNo()" onclick="moveNo()">No 🙈</button>
+      </div>
+
+    </div>
+  `;
+}
+function yes() {
+
+  // allow scrolling for final screen
+  document.body.style.overflow = "auto";
+  document.body.style.height = "auto";
+
+  document.body.innerHTML = `
+    <div class="final-proposal" style="
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding-top:60px;
+      padding-bottom:40px;
+      text-align:center;
+      min-height:100vh;
+    ">
+	
+	  
+      <h2 style="margin-bottom:4px;">
+Thank you for choosing me and this love we share 💖      </h2>
+      <h2 style="margin-bottom:4px;">
+I can’t wait to spend forever with you 💍  
+      </h2>
+      <h2 style="margin-bottom:12px;">
+        I Love You Manu 💖💖💖
+      </h2>
+
+      <img src="https://media3.giphy.com/media/TmT51OyQLFD7a/giphy.gif"
+           style="
+             width:420px;
+             max-width:95%;
+             border-radius:20px;
+           ">
+    </div>
+  `;
+}
+
+function moveNo() {
+  const btn = document.getElementById("noBtn");
+
+  btn.style.position = "fixed";
+  btn.style.width = "auto";
+
+  const x = Math.random() * (window.innerWidth - 140);
+  const y = Math.random() * (window.innerHeight - 80);
+
+  btn.style.left = x + "px";
+  btn.style.top = y + "px";
+
+  // remove old bubble if exists
+  const old = document.getElementById("noText");
+  if (old) old.remove();
+
+  // create moving text bubble
+  const text = document.createElement("div");
+  text.id = "noText";
+  text.innerText = "Not a valid option 😌";
+
+  text.style.position = "fixed";
+  text.style.left = x + "px";
+  text.style.top = (y - 35) + "px";
+  text.style.background = "#ff4d6d";
+  text.style.color = "white";
+  text.style.padding = "6px 12px";
+  text.style.borderRadius = "20px";
+  text.style.fontSize = "13px";
+  text.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+  text.style.pointerEvents = "none";
+  text.style.zIndex = "999";
+
+  document.body.appendChild(text);
+
+  // auto remove after 1 sec
+  setTimeout(() => {
+    text.remove();
+  }, 1000);
+}
+loadQuestion();
+</script>
+
+</body>
+</html>
